@@ -1,15 +1,8 @@
 package com.example.myspring.controller;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.myspring.bean.MySqlConfigBean;
 import com.example.myspring.model.BaseResponseModel;
 import com.example.myspring.model.ProductModel;
+import com.example.myspring.model.ProductPageModel;
 import com.example.myspring.model.ProductResponseModel;
-import com.fasterxml.jackson.databind.JsonSerializable.Base;
-
-import io.swagger.v3.oas.annotations.Hidden;
+import com.example.myspring.model.ProductV2ResponseModel;
 import io.swagger.v3.oas.annotations.Parameter;
 
 // @Hidden
@@ -49,11 +40,16 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "/v2/product", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getProduct(int limit, int offset, int sortMode) {  // 0=升冪, 1=降冪
         ArrayList<ProductModel> result = getProductList(limit, offset, sortMode);
+        int total = getProductCount();
 
-        if(result == null) // 失敗
-            return new ResponseEntity<Object>(new ProductResponseModel(1, "失敗", result), HttpStatus.OK);
+        ProductPageModel data = new ProductPageModel();
+        data.setProducts(result);
+        data.setTotal(total);
+
+        if(result == null || total == -1) // 失敗
+            return new ResponseEntity<Object>(new ProductV2ResponseModel(1, "失敗", data), HttpStatus.OK);
         else // 成功
-            return new ResponseEntity<Object>(new ProductResponseModel(0, "成功", result), HttpStatus.OK);
+            return new ResponseEntity<Object>(new ProductV2ResponseModel(0, "成功", data), HttpStatus.OK);
     }
 
     // 新增商品API
@@ -244,6 +240,36 @@ public class ProductController extends BaseController {
             return e.getMessage();
         } catch(ClassNotFoundException e) {
             return "ClassNotFoundException";
+        }
+    }
+
+    // 取得商品總筆數
+    protected int getProductCount() {
+        try {
+            connect();
+
+            // 3. 取得Statement物件
+            stmt = conn.createStatement();
+
+            rs = stmt.executeQuery("select count(*) as c from product");
+
+            // 取得總筆數
+            rs.next();
+            int total = rs.getInt("c");
+            
+            rs.close();
+            stmt.close();
+            conn.close();
+
+            return total;
+        } catch(ClassNotFoundException e) {// 註冊驅動程式會出現的exception
+            System.out.println("-------------------------------------");
+            System.out.println(e.getMessage());
+            return -1;
+        } catch(SQLException e) {
+            System.out.println("-------------------------------------");
+            System.out.println(e.getMessage());
+            return -1;
         }
     }
 }
