@@ -29,7 +29,8 @@ import com.fasterxml.jackson.databind.JsonSerializable.Base;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Parameter;
 
-@Hidden
+// @Hidden
+
 @CrossOrigin(origins = "*") // 允許不同網域的網頁來呼叫API
 @RestController
 public class ProductController extends BaseController {
@@ -37,6 +38,17 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "/product", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getProduct() {
         ArrayList<ProductModel> result = getProductList();
+
+        if(result == null) // 失敗
+            return new ResponseEntity<Object>(new ProductResponseModel(1, "失敗", result), HttpStatus.OK);
+        else // 成功
+            return new ResponseEntity<Object>(new ProductResponseModel(0, "成功", result), HttpStatus.OK);
+    }
+
+    // 取得所有商品API v2
+    @RequestMapping(value = "/v2/product", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getProduct(int limit, int offset, int sortMode) {  // 0=升冪, 1=降冪
+        ArrayList<ProductModel> result = getProductList(limit, offset, sortMode);
 
         if(result == null) // 失敗
             return new ResponseEntity<Object>(new ProductResponseModel(1, "失敗", result), HttpStatus.OK);
@@ -91,6 +103,53 @@ public class ProductController extends BaseController {
 
             // 4. 下SQL拿資料
             rs = stmt.executeQuery("select * from product");
+
+            // 5. 將SQL回傳的資料存到變數
+            ArrayList<ProductModel> productEntities = new ArrayList<>();
+
+            // 依序一筆一筆拿資料
+            while(rs.next()) {
+                ProductModel pe = new ProductModel();
+                pe.setId(rs.getInt("id"));  // 取得id欄位資料並存到物件內
+                pe.setPhotoUrl(rs.getString("photo_url"));
+                pe.setTitle(rs.getString("title"));
+                pe.setDescription(rs.getString("description"));
+                pe.setPrice(rs.getInt("price"));
+                pe.setStoreName(rs.getString("store_name"));
+                pe.setStoreUrl(rs.getString("store_url"));
+
+                productEntities.add(pe); // 存到陣列內
+            }
+            
+            rs.close();
+            stmt.close();
+            conn.close();
+
+            return productEntities;
+        } catch(ClassNotFoundException e) {// 註冊驅動程式會出現的exception
+            System.out.println("-------------------------------------");
+            System.out.println(e.getMessage());
+            return null;
+        } catch(SQLException e) {
+            System.out.println("-------------------------------------");
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    // 給取得商品資訊二代API用的方法
+    protected ArrayList<ProductModel> getProductList(int limit, int offset, int sortMode ) {
+        try {
+            connect();
+
+            // 3. 取得Statement物件
+            stmt = conn.createStatement();
+
+            String sort = sortMode == 0 ? "ASC" : "DESC";
+
+            // 4. 下SQL拿分頁資料
+            String queryString = "select * from product order by price " + sort + " limit " + limit + " offset " + offset;
+            rs = stmt.executeQuery(queryString);
 
             // 5. 將SQL回傳的資料存到變數
             ArrayList<ProductModel> productEntities = new ArrayList<>();
