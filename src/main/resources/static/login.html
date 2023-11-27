@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - Hacker Login Form</title>
+
+  <link rel="stylesheet" href="./style.css"> 
+
+  <!-- 1. 引入Vue.js框架 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <!-- 引入axios套件，用來串接API -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+
+ </head> 
+
+ <!-- 2. 加上app id來讓vue接管網頁-->
+ <body id="app"> <!-- partial:index.partial.html --> 
+
+  <section> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> 
+
+   <div class="signin"> 
+
+    <div class="content"> 
+
+     <h2>健行拍賣網</h2> 
+
+     <div class="form"> 
+
+      <div class="inputBox"> 
+        
+       <!-- 綁定username變數給input -->
+       <input v-model="username" type="text" name="username" required> <i>帳號</i> 
+
+      </div> 
+
+      <div class="inputBox"> 
+      <!-- 綁定password變數給input -->
+       <input v-model="password" type="password" name="code" required> <i>密碼</i> 
+      </div> 
+      <div v-if="isShowLoginError" class="login-failed">登入失敗</div>
+
+      <div class="links"> <a href="#">忘記密碼</a> <a href="#">註冊</a> 
+
+      </div> 
+      <!-- <div>{{ message }}</div>
+      <button @click="count++">
+        Count is: {{ count }}
+      </button> -->
+
+      <div class="inputBox"> 
+
+       <input type="submit" value="登入" @click="login()"> 
+
+      </div> 
+
+     </div> 
+
+    </div> 
+
+   </div> 
+
+  </section> <!-- partial --> 
+
+
+ </body>
+
+ <!-- 3.建立Vue物件並初始化 -->
+ <script>
+  const { createApp } = Vue
+
+  // vue初始化
+  createApp(
+    {
+      data() {
+        return {
+          count: 0,
+          message: 'Hello Vue!',
+          test: 'Aaron',
+          username: '',  // 用來存放使用者輸入的帳號用
+          password: '',  // 用來存放使用者輸入的密碼用
+          isShowLoginError: false,
+        }
+      },
+      // Vue要使用的方法
+      methods: {
+        testClick() {
+          // alert('Hi Vue');
+          this.test = 'Andy';
+        },
+        // 登入用的方法
+        login() {
+          // alert('Login');
+          console.log('Login'); // System.out.println()
+          console.log('username=' + this.username);
+          console.log('password=' + this.password);
+
+          // 串接登入API
+          axios.get('/login?username=' + this.username + '&password=' + this.password)
+          .then( (response) => {
+            console.log(response);
+
+            // 處理API的回應
+            if(response.status == 200) {
+              console.log('呼叫API成功');
+              if(response.data.code > 0) { // 登入失敗
+                console.log('登入失敗:' + response.data.message);
+                this.isShowLoginError = true;
+              } else {
+                console.log('登入成功');
+                location.href = '/product.html?username=' + this.username;   // 跳轉網頁
+              }
+            }
+          });
+
+        }
+      }
+    }
+  ).mount('#app');
+
+ </script>
+
+</html>

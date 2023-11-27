@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>商品管理</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css"
+    />
+
+    <!-- 1. 引入Vue.js框架 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- 引入axios套件，用來串接API -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body id="app">
+    <!-- 我們的toast -->
+    <div class="toast" v-if="isShowToast">{{ toastMessage }}</div>
+
+    <h1>商品管理</h1>
+    <p>這裡是商品管理頁</p>
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th>編號</th>
+            <th>商品圖</th>
+            <th>名稱</th>
+            <th>描述</th>
+            <th>價格</th>
+            <th>商店圖</th>
+            <th>商店名</th>
+            <th>功能</th>
+          </tr>
+        </thead>
+        <!-- <tfoot>
+      <tr>
+        <th colspan='8'>
+          Year: 2014
+        </th>
+      </tr>
+    </tfoot> -->
+        <tbody>
+          <tr v-for="p, index in data">
+            <td data-title="編號">{{ p.id }}</td>
+            <td data-title="商品圖" class="addr-col">
+              <div v-if="!dataEdiorMode[index]">{{ p.photoUrl }}</div>
+              <input v-else class="editor-input" v-model="tempData[index].photoUrl" />
+            </td>
+            <td data-title="商品名稱">
+              <div v-if="!dataEdiorMode[index]">{{ p.title }}</div>
+              <input v-else class="editor-input" v-model="tempData[index].title" />
+            </td>
+            <td data-title="商品描述">
+              <div v-if="!dataEdiorMode[index]">{{ p.description }}</div>
+              <input v-else class="editor-input" v-model="tempData[index].description" />
+            </td>
+            <td data-title="價格">
+              <div v-if="!dataEdiorMode[index]">{{ p.price }}</div>
+              <input v-else class="editor-input" v-model="tempData[index].price" />
+            </td>
+            <td data-title="商店圖" class="addr-col">
+              <div v-if="!dataEdiorMode[index]">{{ p.storeUrl }}</div>
+              <input v-else class="editor-input" v-model="tempData[index].storeUrl" />
+            </td>
+            <td data-title="商店名">
+              <div v-if="!dataEdiorMode[index]">{{ p.storeName }}</div>
+              <input v-else class="editor-input" v-model="tempData[index].storeName" />
+            </td>
+            <td v-if="!dataEdiorMode[index]" class="select">
+              <a class="button" @click="onEdit(index)">編輯</a>
+              <a class="button" @click="onDelete(index)">刪除</a>
+            </td>
+            <td v-else class="select">
+              <a class="button-cancel" @click="onCancelEdit(index)">取消</a>
+              <a class="button-ok" @click="onOKEdit(index)">確定</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="detail">
+        <div class="detail-container">
+          <dl>
+            <dt>Provider Name</dt>
+            <dd>John Doe</dd>
+            <dt>E-mail</dt>
+            <dd>email@example.com</dd>
+            <dt>City</dt>
+            <dd>Detroit</dd>
+            <dt>Phone-Number</dt>
+            <dd>555-555-5555</dd>
+            <dt>Last Update</dt>
+            <dd>Jun 20 2014</dd>
+            <dt>Notes</dt>
+            <dd>
+              Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec
+              odio. Quisque volutpat mattis eros. Nullam malesuada erat ut
+              turpis. Suspendisse urna nibh, viverra non, semper suscipit,
+              posuere a, pede.
+            </dd>
+          </dl>
+        </div>
+        <div class="detail-nav">
+          <button class="close">Close</button>
+        </div>
+      </div>
+    </main>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="js/index.js"></script>
+
+    <!-- 純手工對話盒 -->
+    <div v-if="isShowModel" class="model-container">
+      <div class="model-title">對話和標題</div>
+      <div class="model-content">
+        <img class="model-icon" src="https://static.vecteezy.com/system/resources/previews/000/440/213/non_2x/question-mark-vector-icon.jpg" />
+        <div class="model-message">確定要刪除資料嗎?</div>
+      </div>
+      <div class="model-content">
+        <div class="model-cancel" @click="isShowModel = false">取消</div>
+        <div class="model-ok" @click="confirmDelete()">確定</div>
+      </div>
+    </div>
+  </body>
+  <script>
+    const { createApp } = Vue
+  
+    // vue初始化
+    createApp(
+      {
+        data() {
+          return {
+            toastMessage: '',
+            isShowToast: false,
+            isShowModel: false, // 控制對話盒的顯示
+            prepareOnDeleteIndex: -1, // 預計要刪除的資料index
+
+            data: [], // 存放商品清單的變數
+            tempData: [], // 存放編輯後的資料用
+            dataEdiorMode: [],
+          }
+        },
+        // Vue要使用的方法
+        methods: {
+          onEdit(index) {
+            this.dataEdiorMode[index] = true; // 進入編輯模式
+
+            // 複製資料到編輯用的tempData陣列內
+            this.tempData[index] = JSON.parse(JSON.stringify(this.data[index]));
+          },
+          onDelete(index) {
+            this.isShowModel = true;
+            this.prepareOnDeleteIndex = index; // 紀錄準備要刪除的index
+          },
+          onCancelEdit(index) {
+            this.dataEdiorMode[index] = false; // 離開編輯模式
+          },
+          // 確定編輯
+          onOKEdit(index) {
+          
+            // 呼叫Update product API
+            axios.put('http://localhost/product', this.tempData[index])
+              .then((response) => {
+                if(response.status == 200 && response.data.code == 0) {// 更新成功
+                  // 更新原本的資料畫面
+                  this.data[index] = this.tempData[index];
+
+                  // 成功再離開編輯模式
+                  this.onCancelEdit(index);
+
+                  this.showToast('更新 ' + this.data[index].title + ' 成功');
+                } else {
+                  this.showToast('更新 ' + this.data[index].title + ' 失敗');
+                }
+              });
+          },
+          confirmDelete() {
+            // 呼叫刪除商品的API
+            axios.delete('/product/' + this.data[this.prepareOnDeleteIndex].id)
+              .then((response) => {
+                if(response.status == 200 && response.data.code == 0) {
+                  this.showToast('刪除 ' + this.data[this.prepareOnDeleteIndex].id + ' 成功');
+
+                  // 從網頁上移除已經刪除的商品資料
+                  this.data.splice(this.prepareOnDeleteIndex, 1);
+                } else {
+                  this.showToast('刪除 ' + this.data[this.prepareOnDeleteIndex].id + ' 失敗');
+                }
+
+                this.isShowModel = false;
+                this.prepareOnDeleteIndex = -1; // 紀錄準備要刪除的index
+              });
+          },
+          showToast(msg) {
+            this.isShowToast = true;
+            this.toastMessage = msg;
+  
+            setTimeout(() => {
+              this.isShowToast = false;
+            }, 2000);
+          }
+        },
+        // 這個方法會網頁載入完畢後會自動被呼叫
+        mounted() {
+          // 打API要商品資訊
+          axios.get('http://localhost/product')
+            .then((response) => {
+              // 處理API的response
+              console.log(response);
+
+              if(response.status == 200) { // API呼叫成功 
+                if(response.data.code == 0) { // 取的資料成功
+                  this.data = response.data.data; // 將商品資訊存到變數內
+                  console.log(this.data);
+                }
+                else
+                  this.data =[];  // 清空資料
+              }
+            });
+        }
+      }
+    ).mount('#app');
+  
+   </script>
+</html>

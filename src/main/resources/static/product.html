@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Java養成班專題網站</title>
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="./product.css">
+
+   <!-- 1. 引入Vue.js框架 -->
+   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+   <!-- 引入axios套件，用來串接API -->
+   <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+
+</head>
+
+<body id="app">
+  <div class="toast" v-if="isShowToast">{{ toastMessage }}</div>
+  <div class="add-btn" @click="isShowForm = true">
+    <img src="plus.svg" style="width: 100%;" />
+  </div>
+  
+  <div class="bg">
+    <h1>歡迎{{ username }}</h1>
+  </div>
+  <div class="nav-bar">
+    <button type="text" class="submit" @click="isShowForm = true">新增商品</button>
+  </div>
+  <div class="container">
+    <!-- 卡片資料 -->
+    <div v-for="p in data" class="nft">
+      <div class='main'>
+        <img class='tokenImage' :src="p.photoUrl" alt="NFT" />
+        <h2>{{ p.title }}</h2>
+        <p class='description'>{{ p.description }}</p>
+        <div class='tokenInfo'>
+          <div class="price">
+            <ins>$</ins>
+            <p>{{ p.price }}</p>
+          </div>
+          <!-- <div class="duration">
+            <ins>◷</ins>
+            <p>11 days left</p>
+          </div> -->
+        </div>
+        <hr />
+        <div class='creator'>
+          <div class='wrapper'>
+            <img :src="p.storeUrl" alt="Creator" />
+          </div>
+          <p><ins>{{ p.storeName }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mask" v-if="isShowForm"></div>
+
+  <!-- 輸入用彈出式表單 -->
+  <div class="form" v-if="isShowForm">
+    <div class="title">新增商品</div>
+    <!-- <div class="subtitle">Let's create your account!</div> -->
+    <div class="input-container ic1">
+      <input id="firstname" class="input" type="text" placeholder=" " v-model="newProduct.photoUrl" />
+      <div class="cut"></div>
+      <label for="firstname" class="placeholder">商品圖片位置</label>
+    </div>
+    <div class="input-container ic2">
+      <input id="lastname" class="input" type="text" placeholder=" " v-model="newProduct.title" />
+      <div class="cut cut-short"></div>
+      <label for="lastname" class="placeholder">商品名稱</label>
+    </div>
+    <div class="input-container ic2">
+      <input id="email" class="input" type="text" placeholder=" " v-model="newProduct.description" />
+      <div class="cut cut-short"></div>
+      <label for="email" class="placeholder">商品描述</lable>
+    </div>
+    <div class="input-container ic1">
+      <input id="firstname" class="input" type="text" placeholder=" " v-model="newProduct.price" />
+      <div class="cut cut-short"></div>
+      <label for="firstname" class="placeholder">商品價格</label>
+    </div>
+    <div class="input-container ic1">
+      <input id="firstname" class="input" type="text" placeholder=" " v-model="newProduct.storeUrl" />
+      <div class="cut"></div>
+      <label for="firstname" class="placeholder">商店圖片位置</label>
+    </div>
+    <div class="input-container ic1">
+      <input id="firstname" class="input" type="text" placeholder=" " v-model="newProduct.storeName" />
+      <div class="cut cut-short"></div>
+      <label for="firstname" class="placeholder">商店名稱</label>
+    </div>
+    <div class="btn-group">
+      <button type="text" class="submit" @click="isShowForm = false">取消</button>
+      <button type="text" class="submit" @click="onSend()">確定</button>
+    </div>
+  </div>  
+  
+</body>
+<script>
+  const { createApp } = Vue
+
+  // vue初始化
+  createApp(
+    {
+      data() {
+        return {
+          username: '',
+          toastMessage: '',
+          isShowToast: false,
+          isShowForm: false, // 控制新增表單是否要出現
+
+          // 新增商品用的資料結構
+          newProduct: {
+            photoUrl: '',
+            title: '',
+            description: '',
+            price: 0,
+            storeUrl: '',
+            storeName: '',
+          },
+          // 存放商品資訊
+          data: []
+        }
+      },
+      // Vue要使用的方法
+      methods: {
+        uploadFile(event) {
+          console.log(event.target.files);
+          this.$refs.preview.src = URL.createObjectURL(event.target.files[0]);
+        },
+        // 送出要新增的商品資料
+        onSend() {
+          axios.post('/product', this.newProduct)
+            .then((response) => {
+              // 打API成功
+              if(response.status == 200 && response.data.code == 0) {
+                // alert('新增資料成功');
+                this.showToast('新增資料成功');
+                
+                // 將新增的資料丟給畫面顯示
+                this.data.push(JSON.parse(JSON.stringify(this.newProduct)));
+              } else {
+                alert('新增資料失敗');
+              }
+            });
+          // 隱藏對話框
+          this.isShowForm = false;
+        },
+        showToast(msg) {
+          this.isShowToast = true;
+          this.toastMessage = msg;
+
+          setTimeout(() => {
+            this.isShowToast = false;
+          }, 2000);
+        }
+      },
+      // 這個方法會網頁載入完畢後會自動被呼叫
+      mounted() {
+        // 取得網址列參數
+        const queryString = window.location.search;
+        // 解析參數列
+        const parameters = new URLSearchParams(queryString);
+        // 取得使用者名稱
+        this.username = parameters.get('username');
+
+        // 打API要商品資訊
+        axios.get('/product')
+          .then((response) => {
+            // 處理API的response
+            console.log(response);
+
+            if(response.status == 200) { // API呼叫成功 
+              if(response.data.code == 0)  // 取的資料成功
+               this.data = response.data.data; // 將商品資訊存到變數內
+              else
+               this.data =[];  // 清空資料
+            }
+          });
+      }
+    }
+  ).mount('#app');
+
+ </script>
+</html>
