@@ -195,6 +195,9 @@ public class ProductController extends BaseController {
 
             pstmt.executeUpdate();
 
+            pstmt.close();
+            conn.close();
+
             return "";
         } catch(SQLException e) {
             return e.getMessage();
@@ -218,6 +221,9 @@ public class ProductController extends BaseController {
             pstmt.setInt(7, product.getId());
             pstmt.executeUpdate();
 
+            pstmt.close();
+            conn.close();
+
             return "";
         } catch(SQLException e) {
             return e.getMessage();
@@ -234,6 +240,9 @@ public class ProductController extends BaseController {
             pstmt = conn.prepareStatement("DELETE from product WHERE id = ?");
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
+
+            pstmt.close();
+            conn.close();
 
             return "";
         } catch(SQLException e) {
