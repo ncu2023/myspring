@@ -7,6 +7,9 @@ import com.example.myspring.model.CountdownModel;
 import com.example.myspring.model.CountdownResponseModel;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.sql.Date;
 import java.sql.SQLException;
 
@@ -25,11 +28,13 @@ public class CountdownController extends BaseController {
     @GetMapping(value="/v1/countdown")
     public ResponseEntity getCountdown() {
         Timestamp t = queryDeadline();
+        System.out.println("==> " + t.getTime());
     
         if(t != null) {
             // 轉換時間格式給前端用
-            SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String result = s.format(t);
+            System.out.println("==> " + result);
 
             return new ResponseEntity<Object>(new CountdownResponseModel(0, "讀取deadline成功", result), HttpStatus.OK);
         } else {
@@ -58,6 +63,7 @@ public class CountdownController extends BaseController {
             rs = stmt.executeQuery("SELECT * from count_down");
             rs.next();
 
+            // Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             Timestamp t = rs.getTimestamp("deadline");
             
             rs.close();
@@ -81,6 +87,7 @@ public class CountdownController extends BaseController {
             connect();
 
             pstmt = conn.prepareStatement("UPDATE count_down set deadline = ?");
+            // Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
             pstmt.setTimestamp(1, new Timestamp(t));
             pstmt.executeUpdate();
 

@@ -12,12 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.myspring.model.AccountModel;
 import com.example.myspring.model.BaseResponseModel;
 import com.example.myspring.model.LoginResponseModel;
+import com.example.myspring.model.ProductModel;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -94,5 +97,49 @@ public class LoginController extends BaseController {
         } catch(SQLException e) {
             return e.getMessage();
         } 
+    }
+
+    // 註冊API
+    @RequestMapping(value = "/v1/account", method = RequestMethod.POST, 
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity postAccount(@RequestBody AccountModel account) {
+        String result = insertAccount(account);
+
+        if(result.length() == 0)
+            return new ResponseEntity<>(new BaseResponseModel(0, "成功"), HttpStatus.OK);
+        else 
+            return new ResponseEntity<>(new BaseResponseModel(1, result), HttpStatus.OK);
+    }
+
+    protected String insertAccount(AccountModel account) {
+        try {
+            connect();
+
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT count(*) as c from account WHERE name='" + account.getName() +"'");
+            rs.next();
+            int count = rs.getInt("c");
+
+            // 帳號已經存在
+            if(count >= 1) return "";
+
+            // 準備statement的SQL語法
+            pstmt = conn.prepareStatement("INSERT INTO account VALUES(null, ?, ?, ?, ?)");
+            pstmt.setString(1, account.getName());
+            pstmt.setString(2, account.getCode());
+            pstmt.setString(3, account.getEmail());
+            pstmt.setString(4, account.getPhone());
+            pstmt.executeUpdate();
+
+            pstmt.close();
+            conn.close();
+
+            return "";
+        } catch(SQLException e) {
+            return e.getMessage();
+        } catch(ClassNotFoundException e) {
+            return "ClassNotFoundException";
+        }
     }
 }
