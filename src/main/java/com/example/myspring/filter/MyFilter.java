@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebFilter(urlPatterns = "/*", filterName = "myFilter")
+@WebFilter(urlPatterns = "/api/*", filterName = "myFilter")
 public class MyFilter extends OncePerRequestFilter {
     // 白名單
     final ArrayList<String> whiteListArrayList = new ArrayList<>(Arrays.asList(new String[]{"/login"}));
