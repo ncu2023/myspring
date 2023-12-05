@@ -1,19 +1,35 @@
 package com.example.myspring.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
+import com.example.myspring.model.ShopCartDAO;
 import com.example.myspring.model.ShopCartDTO;
+import com.example.myspring.repository.ShopCartRepository;
 
 @Service
 public class ShopCartService {
+    final private ShopCartRepository shopCartRepository;
+
+    public ShopCartService(ShopCartRepository shopCartRepository) {
+        this.shopCartRepository = shopCartRepository;
+    }
+
     public boolean add(ShopCartDTO shopCartDTO) {
         System.out.println("ShopCartService");
         System.out.println(shopCartDTO);
 
-        // 將資料轉成DAO
-
+        // 將DTO資料轉成DAO
+        ShopCartDAO shopCartDAO = new ShopCartDAO();
+        shopCartDAO.setPrdId(shopCartDTO.getProId());
+        shopCartDAO.setQuantity(shopCartDTO.getQuantity());
+        shopCartDAO.setUserId(shopCartDTO.getUserId());
+        shopCartDAO.setCreatedDate(LocalDateTime.now());
+        
         // 寫入資料庫
-
-        return false;
+        ShopCartDAO result = shopCartRepository.save(shopCartDAO);
+        
+        return result != null;
     }
 }
