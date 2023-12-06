@@ -15,6 +15,8 @@ import com.example.myspring.service.ShopCartService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -31,11 +33,28 @@ public class ShopCartController {
     public ResponseEntity postShopCart(@RequestBody ShopCartDTO shopcart) {
         System.out.println("postShopCart");
         System.out.println(shopcart);
-        boolean result = shopCartService.add(shopcart);
+
+        // id=0 代表一定會新增資料
+        shopcart.setId(0);
+
+        boolean result = shopCartService.save(shopcart);
 
         return result ?
             new ResponseEntity<Object>(new BaseResponseModel(0, "成功"), HttpStatus.OK):
             new ResponseEntity<Object>(new BaseResponseModel(1, "失敗"), HttpStatus.OK);
+    }
+
+    @PutMapping("/api/v1/shopcart")
+    public ResponseEntity putShopCart(@RequestBody ShopCartDTO shopCartDTO) {
+        if(shopCartDTO.getId() <= 0 ) {
+            return new ResponseEntity<Object>(new BaseResponseModel(1, "失敗"), HttpStatus.OK);
+        } else {
+            boolean result = shopCartService.save(shopCartDTO);
+
+            return result ?
+                new ResponseEntity<Object>(new BaseResponseModel(0, "成功"), HttpStatus.OK):
+                new ResponseEntity<Object>(new BaseResponseModel(1, "失敗"), HttpStatus.OK);
+        }
     }
 
     @DeleteMapping("/api/v1/shopcart/{id}")

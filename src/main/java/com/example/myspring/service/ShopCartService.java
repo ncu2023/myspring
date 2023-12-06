@@ -17,12 +17,14 @@ public class ShopCartService {
     }
 
     // 新增購物車資料
-    public boolean add(ShopCartDTO shopCartDTO) {
+    // 更新購物車資料
+    public boolean save(ShopCartDTO shopCartDTO) {
         System.out.println("ShopCartService");
         System.out.println(shopCartDTO);
 
         // 將DTO資料轉成DAO
         ShopCartDAO shopCartDAO = new ShopCartDAO();
+        shopCartDAO.setId(shopCartDTO.getId());
         shopCartDAO.setPrdId(shopCartDTO.getProId());
         shopCartDAO.setQuantity(shopCartDTO.getQuantity());
         shopCartDAO.setUserId(shopCartDTO.getUserId());
@@ -36,7 +38,8 @@ public class ShopCartService {
 
     // 查詢購物車全部資料
 
-    // 更新購物車資料
+    
+    
 
     // 刪除購物車資料
     public void delete(int id) {

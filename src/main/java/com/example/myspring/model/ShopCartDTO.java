@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ShopCartDTO {
+    int id;
     int proId;
     int quantity;
     int userId;

@@ -17,7 +17,6 @@ import lombok.Data;
 @Table(name = "shop_cart_holy")
 public class ShopCartDAO {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
         
     int prdId;
