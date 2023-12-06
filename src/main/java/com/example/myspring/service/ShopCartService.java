@@ -16,6 +16,7 @@ public class ShopCartService {
         this.shopCartRepository = shopCartRepository;
     }
 
+    // 新增購物車資料
     public boolean add(ShopCartDTO shopCartDTO) {
         System.out.println("ShopCartService");
         System.out.println(shopCartDTO);
@@ -31,5 +32,14 @@ public class ShopCartService {
         ShopCartDAO result = shopCartRepository.save(shopCartDAO);
         
         return result != null;
+    }
+
+    // 查詢購物車全部資料
+
+    // 更新購物車資料
+
+    // 刪除購物車資料
+    public void delete(int id) {
+        shopCartRepository.deleteById(27);
     }
 }

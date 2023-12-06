@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,7 +14,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "shop_cart")
+@Table(name = "shop_cart_holy")
 public class ShopCartDAO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
