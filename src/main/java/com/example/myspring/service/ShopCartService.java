@@ -1,19 +1,27 @@
 package com.example.myspring.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.example.myspring.model.ShopCartDAO;
 import com.example.myspring.model.ShopCartDTO;
+import com.example.myspring.model.ShopCartFullDAO;
+import com.example.myspring.model.ShopCartFullDTO;
+import com.example.myspring.repository.ShopCartFullRepository;
 import com.example.myspring.repository.ShopCartRepository;
 
 @Service
 public class ShopCartService {
     final private ShopCartRepository shopCartRepository;
+    final private ShopCartFullRepository shopCartFullRepository;
 
-    public ShopCartService(ShopCartRepository shopCartRepository) {
+    public ShopCartService(ShopCartRepository shopCartRepository, ShopCartFullRepository shopCartFullRepository) {
         this.shopCartRepository = shopCartRepository;
+        this.shopCartFullRepository = shopCartFullRepository;
     }
 
     // 新增購物車資料
@@ -37,12 +45,34 @@ public class ShopCartService {
     }
 
     // 查詢購物車全部資料
+    public ArrayList<ShopCartFullDTO> findAll() {
+        List<ShopCartFullDAO> result = shopCartFullRepository.findAll();
 
-    
-    
+        if(result != null) {
+            ArrayList<ShopCartFullDTO> shopCartFullDTOs = new ArrayList<>();
+            
+            for(ShopCartFullDAO shopCartFullDAO : result) {
+                System.out.println(shopCartFullDAO);
+                ShopCartFullDTO shopCartFullDTO = new ShopCartFullDTO();
+                shopCartFullDTO.setId(shopCartFullDAO.getId());
+                shopCartFullDTO.setQuantity(shopCartFullDAO.getQuantity());
+                shopCartFullDTO.setUserId(shopCartFullDAO.getUserId());
+                // shopCartFullDTO.setPhotoUrl(shopCartFullDAO.productDAO.getPhotoUrl());
+                // shopCartFullDTO.setTitle(shopCartFullDAO.getProductDAO().getTitle());
+                // shopCartFullDTO.setDescription(shopCartFullDAO.getProductDAO().getDescription());
+
+                shopCartFullDTOs.add(shopCartFullDTO);
+            }
+
+            return shopCartFullDTOs;
+        }
+
+        return null;
+    }
 
     // 刪除購物車資料
     public void delete(int id) {
-        shopCartRepository.deleteById(27);
+        shopCartRepository.deleteById(id);
     }
 }
+ 

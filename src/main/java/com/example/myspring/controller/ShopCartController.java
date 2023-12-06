@@ -1,5 +1,7 @@
 package com.example.myspring.controller;
 
+import java.util.ArrayList;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,11 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.myspring.model.BaseResponseModel;
 import com.example.myspring.model.ShopCartDTO;
+import com.example.myspring.model.ShopCartFullDTO;
+import com.example.myspring.model.ShopCartResponseModel;
 import com.example.myspring.service.ShopCartService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 
 
@@ -44,6 +50,16 @@ public class ShopCartController {
             new ResponseEntity<Object>(new BaseResponseModel(1, "失敗"), HttpStatus.OK);
     }
 
+    @GetMapping("/api/v1/shopcart")
+    public ResponseEntity getShopCart() {
+        ArrayList<ShopCartFullDTO> data = shopCartService.findAll();
+
+        if(data != null)
+            return new ResponseEntity<Object>(new ShopCartResponseModel(0, "成功", data), HttpStatus.OK);
+        else
+            return new ResponseEntity<Object>(new ShopCartResponseModel(1, "失敗", null), HttpStatus.OK);
+    }
+    
     @PutMapping("/api/v1/shopcart")
     public ResponseEntity putShopCart(@RequestBody ShopCartDTO shopCartDTO) {
         if(shopCartDTO.getId() <= 0 ) {

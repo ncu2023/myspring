@@ -8,16 +8,15 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "shop_cart_holy")
-public class ShopCartDAO {
+@Table(name = "product")
+public class ProductDAO {
     @Id
     int id;
-        
-    int prdId;
 
-    int quantity;
-
-    LocalDateTime createdDate;
-
-    int userId;
+    String photoUrl;
+    String title;
+    String description;
+    int price;
+    String storeUrl;
+    String storeName;
 }
