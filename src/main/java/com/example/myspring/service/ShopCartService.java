@@ -45,23 +45,30 @@ public class ShopCartService {
     }
 
     // 查詢購物車全部資料
-    public ArrayList<ShopCartFullDTO> findAll() {
-        List<ShopCartFullDAO> result = shopCartFullRepository.findAll();
+    public ArrayList<ShopCartFullDTO> findAll(int userId) {
+        List<ShopCartFullDAO> result = shopCartFullRepository.findByUserId(userId);
 
         if(result != null) {
             ArrayList<ShopCartFullDTO> shopCartFullDTOs = new ArrayList<>();
             
             for(ShopCartFullDAO shopCartFullDAO : result) {
-                System.out.println(shopCartFullDAO);
-                ShopCartFullDTO shopCartFullDTO = new ShopCartFullDTO();
-                shopCartFullDTO.setId(shopCartFullDAO.getId());
-                shopCartFullDTO.setQuantity(shopCartFullDAO.getQuantity());
-                shopCartFullDTO.setUserId(shopCartFullDAO.getUserId());
-                // shopCartFullDTO.setPhotoUrl(shopCartFullDAO.productDAO.getPhotoUrl());
-                // shopCartFullDTO.setTitle(shopCartFullDAO.getProductDAO().getTitle());
-                // shopCartFullDTO.setDescription(shopCartFullDAO.getProductDAO().getDescription());
-
-                shopCartFullDTOs.add(shopCartFullDTO);
+                // if(userId == shopCartFullDAO.getUserId()) {
+                    System.out.println(shopCartFullDAO);
+                    ShopCartFullDTO shopCartFullDTO = new ShopCartFullDTO();
+                    shopCartFullDTO.setId(shopCartFullDAO.getId());
+                    shopCartFullDTO.setQuantity(shopCartFullDAO.getQuantity());
+                    shopCartFullDTO.setUserId(shopCartFullDAO.getUserId());
+                    
+                    // 如果join不到product，getProductDAO()方法會回傳null
+                    if(shopCartFullDAO.getProductDAO() != null) {
+                        shopCartFullDTO.setPrdId(shopCartFullDAO.getProductDAO().getId());
+                        shopCartFullDTO.setPhotoUrl(shopCartFullDAO.getProductDAO().getPhotoUrl());
+                        shopCartFullDTO.setTitle(shopCartFullDAO.getProductDAO().getTitle());
+                        shopCartFullDTO.setDescription(shopCartFullDAO.getProductDAO().getDescription());
+                    }
+                
+                    shopCartFullDTOs.add(shopCartFullDTO);
+                // }
             }
 
             return shopCartFullDTOs;

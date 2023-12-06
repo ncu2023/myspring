@@ -23,7 +23,7 @@ public class ShopCartFullDAO {
 
     int userId;
 
-    @OneToOne
+    @OneToOne()
     @JoinColumn(name = "prdId")
-    public ProductDAO productDAO;
+    ProductDAO productDAO;
 }

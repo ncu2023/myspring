@@ -51,8 +51,8 @@ public class ShopCartController {
     }
 
     @GetMapping("/api/v1/shopcart")
-    public ResponseEntity getShopCart() {
-        ArrayList<ShopCartFullDTO> data = shopCartService.findAll();
+    public ResponseEntity getShopCart(int userId) {
+        ArrayList<ShopCartFullDTO> data = shopCartService.findAll(userId);
 
         if(data != null)
             return new ResponseEntity<Object>(new ShopCartResponseModel(0, "成功", data), HttpStatus.OK);
