@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true") // 允許不同網域的網頁來呼叫API
+@CrossOrigin(origins = "*") // 允許不同網域的網頁來呼叫API
 @RestController
 public class ShopCartController {
     final private ShopCartService shopCartService;

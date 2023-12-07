@@ -33,7 +33,7 @@ public class ShopCartService {
         // 將DTO資料轉成DAO
         ShopCartDAO shopCartDAO = new ShopCartDAO();
         shopCartDAO.setId(shopCartDTO.getId());
-        shopCartDAO.setPrdId(shopCartDTO.getProId());
+        shopCartDAO.setPrdId(shopCartDTO.getPrdId());
         shopCartDAO.setQuantity(shopCartDTO.getQuantity());
         shopCartDAO.setUserId(shopCartDTO.getUserId());
         shopCartDAO.setCreatedDate(LocalDateTime.now());
@@ -65,6 +65,7 @@ public class ShopCartService {
                         shopCartFullDTO.setPhotoUrl(shopCartFullDAO.getProductDAO().getPhotoUrl());
                         shopCartFullDTO.setTitle(shopCartFullDAO.getProductDAO().getTitle());
                         shopCartFullDTO.setDescription(shopCartFullDAO.getProductDAO().getDescription());
+                        shopCartFullDTO.setPrice(shopCartFullDAO.getProductDAO().getPrice());
                     }
                 
                     shopCartFullDTOs.add(shopCartFullDTO);

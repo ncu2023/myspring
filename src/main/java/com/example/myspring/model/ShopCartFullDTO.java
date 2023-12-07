@@ -21,4 +21,6 @@ public class ShopCartFullDTO {
     String title;
 
     String description;
+
+    int price;
 }

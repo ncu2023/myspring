@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpSession;
 
 // @Hidden
 
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true") // 允許不同網域的網頁來呼叫API
+@CrossOrigin(origins = "*") // 允許不同網域的網頁來呼叫API
 @RestController
 public class ProductController extends BaseController {
     // 取得所有商品API
