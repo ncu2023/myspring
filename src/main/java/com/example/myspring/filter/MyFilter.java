@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.myspring.model.BaseResponseModel;
@@ -18,7 +19,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebFilter(urlPatterns = "/api/*", filterName = "myFilter")
+
+@WebFilter(urlPatterns = "/api/v/*", filterName = "myFilter")
 public class MyFilter extends OncePerRequestFilter {
     // 白名單
     final ArrayList<String> whiteListArrayList = new ArrayList<>(Arrays.asList(new String[]{"/login"}));
@@ -26,6 +28,12 @@ public class MyFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        // Authorize the origin, all headers, and all methods
+        ((HttpServletResponse) response).addHeader("Access-Control-Allow-Origin", "*");
+        ((HttpServletResponse) response).addHeader("Access-Control-Allow-Headers", "*");
+        ((HttpServletResponse) response).addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST, DELETE");
+
         System.out.println("My Filter getServletPath: " + request.getServletPath());
         System.out.println("My Filter getRequestURL: " + request.getRequestURL());
 

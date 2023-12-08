@@ -16,15 +16,8 @@ import com.example.myspring.model.ShopCartDTO;
 import com.example.myspring.model.ShopCartFullDTO;
 import com.example.myspring.model.ShopCartResponseModel;
 import com.example.myspring.service.ShopCartService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-
-
-
-
 
 @CrossOrigin(origins = "*") // 允許不同網域的網頁來呼叫API
 @RestController
